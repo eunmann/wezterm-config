@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/helpers.sh"
 
 FONT_NAME="SauceCodePro Nerd Font"
-FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SauceCodePro.zip"
+FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/SourceCodePro.zip"
 FONT_DEST_DIR="/usr/local/share/fonts/NerdFonts"
 
 echo "==> Installing ${FONT_NAME} system-wide to ${FONT_DEST_DIR}..."
