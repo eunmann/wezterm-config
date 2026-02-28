@@ -6,31 +6,16 @@ source "$SCRIPT_DIR/helpers.sh"
 
 get_user_info
 
-echo "==> Installing Claude Code CLI..."
+echo "==> Installing Claude Code (native binary)..."
 
-# Load nvm to ensure node/npm are available
-export NVM_DIR="$USER_HOME/.nvm"
-if [ -s "$NVM_DIR/nvm.sh" ]; then
-  \. "$NVM_DIR/nvm.sh"
-else
-  echo "!! nvm not found. Please run install/nvm.sh and install/node.sh first."
-  exit 1
+if command -v claude >/dev/null 2>&1; then
+  echo "    Claude Code already installed: $(claude --version 2>/dev/null || echo 'unknown version')"
+  echo "    To update, run: claude update"
+  exit 0
 fi
 
-# Verify node is available
-if ! command -v npm >/dev/null 2>&1; then
-  echo "!! npm not found. Please run install/node.sh first."
-  exit 1
-fi
+# Install using the official installer (installs to ~/.local/bin/claude)
+echo "    Running official installer..."
+curl -fsSL https://claude.ai/install.sh | bash
 
-# Install Claude Code globally
-echo "    Installing @anthropic-ai/claude-code globally..."
-npm install -g @anthropic-ai/claude-code
-
-# Verify installation
-if command -v claude-code >/dev/null 2>&1; then
-  echo "    Claude Code installed successfully"
-  claude-code --version || echo "    Claude Code is ready"
-else
-  echo "!! Claude Code not found in PATH. May need new shell session."
-fi
+echo "    Claude Code installed successfully"

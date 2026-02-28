@@ -12,9 +12,9 @@ Personal WezTerm and Zsh configuration with modular installation system.
 This installs everything:
 - WezTerm (via Flatpak) + SauceCodePro Nerd Font
 - Zsh as default shell + custom configurations
-- Nix package manager (multi-user/daemon mode)
-- Neovim and Go (via Nix)
-- nvm, Node.js 22, and Claude Code CLI
+- Go (latest from go.dev)
+- Neovim (latest from GitHub)
+- Claude Code (native binary)
 - Docker
 
 **Or install components separately:**
@@ -24,14 +24,9 @@ Terminal setup only:
 ./install.sh
 ```
 
-Development tools only (Nix):
+Development tools only (Go + Neovim + Claude Code):
 ```bash
-./install-nix.sh
-```
-
-Node.js environment only:
-```bash
-./install-node.sh
+./install-devtools.sh
 ```
 
 Docker only:
@@ -50,17 +45,11 @@ Docker only:
 ./install/dotfiles.sh          # Copy config files to ~
 ```
 
-**Nix setup modules:**
+**Development tools modules:**
 ```bash
-./install/nix.sh               # Install and configure Nix
-./install/nix-packages.sh      # Install Neovim and Go via Nix
-```
-
-**Node.js setup modules:**
-```bash
-./install/nvm.sh               # Install nvm (Node Version Manager)
-./install/node.sh              # Install Node.js 22 via nvm
-./install/claude-code.sh       # Install Claude Code CLI via npm
+./install/go.sh                # Install latest Go from go.dev
+./install/neovim.sh            # Install latest Neovim from GitHub
+./install/claude-code.sh       # Install Claude Code native binary
 ```
 
 **Container platform:**
