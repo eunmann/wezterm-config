@@ -43,6 +43,7 @@ Docker only:
 ./install/fonts.sh             # Install Nerd Fonts
 ./install/zsh-setup.sh         # Set zsh as default shell
 ./install/dotfiles.sh          # Copy config files to ~
+./install/zshrc.sh             # Install/update only .zshrc (with backup)
 ```
 
 **Development tools modules:**

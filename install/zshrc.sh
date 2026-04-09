@@ -7,7 +7,5 @@ source "$SCRIPT_DIR/helpers.sh"
 
 get_user_info
 
-echo "==> Installing dotfiles to $USER_HOME..."
-
+echo "==> Installing .zshrc to $USER_HOME..."
 install_dotfile "$REPO_ROOT/.zshrc" "$USER_HOME/.zshrc"
-install_dotfile "$REPO_ROOT/.wezterm.lua" "$USER_HOME/.wezterm.lua"
