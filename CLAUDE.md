@@ -32,12 +32,13 @@ All scripts orchestrate their respective modules in the correct order. For selec
 - `install-all.sh` - Master installation script that runs everything in order (3 phases)
 - `install.sh` - Terminal setup (WezTerm + Zsh)
 - `install-devtools.sh` - Development tools (Go + Neovim + Claude Code)
-- `install/helpers.sh` - Common helper functions (`need_sudo`, `get_user_info`)
+- `install/helpers.sh` - Common helper functions (`need_sudo`, `get_user_info`, `install_dotfile`)
 - `install/packages.sh` - Installs required apt packages (zsh, git, curl, unzip, xclip, jq)
 - `install/flatpak-wezterm.sh` - Installs Flatpak, adds Flathub, and installs WezTerm
 - `install/fonts.sh` - Downloads and installs SauceCodePro Nerd Font system-wide (latest version via GitHub API)
 - `install/zsh-setup.sh` - Sets zsh as the default shell in /etc/shells
 - `install/dotfiles.sh` - Copies .zshrc and .wezterm.lua to user home directory with backups
+- `install/zshrc.sh` - Installs/updates only .zshrc (focused module, used by `dotfiles.sh`)
 - `install/go.sh` - Installs latest Go from go.dev to /usr/local/go
 - `install/neovim.sh` - Installs latest Neovim from GitHub releases to /opt/nvim
 - `install/claude-code.sh` - Installs Claude Code native binary via official installer
@@ -49,17 +50,24 @@ The `.wezterm.lua` file uses WezTerm's Lua API:
 - Configuration is built using `wezterm.config_builder()`
 - Actions are accessed via `wezterm.action` (aliased as `act`)
 - Settings use the `config.*` pattern (e.g., `config.color_scheme`, `config.font`)
-- Keybindings are defined in the `config.keys` table with `key`, `mods` (modifiers), and `action` fields
-- Git status integration via `wezterm.on("user-var-changed", ...)` event handler that displays repo/branch info
+- Keybindings are defined in the `config.keys` table with `key`, `mods` (modifiers), and `action` fields. Modifier scheme uses only `CTRL`/`SHIFT`/`ALT` (never `SUPER`/`CMD`) because the Windows key is intercepted by the OS shell on Windows. We rely on wezterm's built-in `CTRL+SHIFT` defaults for tabs (`T`/`W`/`1..9`), tab nav (`CTRL+TAB`/`CTRL+SHIFT+TAB`), command palette (`P`), search (`F`), copy mode (`X`), and quick select (`Space`); the only custom non-leader bindings are explicit font-size keys, because wezterm's default `+`/`=` matching doesn't handle SHIFT reliably across versions.
+- Leader key is `CTRL+SPACE` (`config.leader`); pane operations are bound under `LEADER` (e.g., `LEADER \\` splits right, `LEADER -` splits down, `LEADER hjkl` navigates, `LEADER z` zooms, `LEADER x` closes, `LEADER r` enters a `resize_pane` key table where bare `hjkl` resizes).
+- Right status bar composes multiple sources via the `update-status` event. Because `window:set_right_status` *replaces* the right area, individual sources cannot write directly: the `git_status` user-var from zsh is cached into a module-level variable (in the `user-var-changed` handler) and the actual rendering happens in `update-status`, where git + hostname + time are concatenated and written in one call. Adding a new source means: cache it like git, then concatenate it inside `render_right_status`.
+- Tab titles are customised by the `format-tab-title` event, which shows `[index] process — cwd_basename` plus a `●` marker on inactive tabs with unseen output
+- Hyperlink rules extend (not replace) `wezterm.default_hyperlink_rules()` so the built-in URL detectors keep working; a custom rule turns `owner/repo#1234` into a clickable GitHub link
+- Cross-platform: `wezterm.target_triple` is checked to set up a `wsl_domains` entry + `default_domain` on Windows (launches into WSL Ubuntu via the `WSL:Ubuntu` domain so new tabs/panes inherit the WSL cwd via OSC 7); on macOS/Linux WezTerm uses the user's login shell. The same file is installed to `~/.wezterm.lua` on macOS/Linux and to `C:\Users\<user>\.wezterm.lua` on Windows.
 
 ## Zsh Configuration Architecture
 
 The `.zshrc` provides:
-- **History management**: Shared history across sessions with duplicate removal
-- **Git status integration**: `precmd()` hook sends git repo and branch info to WezTerm via `wez_set_user_var()`
-  - Uses base64 encoding to send data via OSC 1337 escape sequences
-  - `prompt_git_status()` extracts repo name and current branch
-- **Minimal prompt**: User@host + directory + command prompt (status displayed in WezTerm's right status bar)
+- **PATH**: prepends `~/.local/bin` (where the Claude Code binary lives) and dedupes via `typeset -U path PATH`
+- **History management**: shared history across sessions, duplicate removal (`SHARE_HISTORY`, `HIST_IGNORE_ALL_DUPS`, etc.), 10k entries
+- **Completion**: `compinit` for tab completion
+- **Minimal prompt**: `user@host ~/path %` — git/host/time render in WezTerm's right status bar instead of in the prompt
+- **WezTerm integration** (only active when `$TERM_PROGRAM == WezTerm`):
+  - `_wez_precmd` hook emits OSC 7 (cwd reporting, so new wezterm tabs inherit the cwd), and OSC 1337 user-vars for `git_status` (`"repo (branch)"`) and `prog` (reset to `zsh` between commands)
+  - `_wez_preexec` hook updates `prog` to the running command name; this works around the WSL quirk where wezterm sees `wslhost.exe` instead of the real foreground process
+  - `wez_set_user_var` helper base64-encodes the value into the OSC 1337 SetUserVar sequence
 
 ## Installation Module Pattern
 

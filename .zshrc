@@ -1,39 +1,59 @@
-# Function to get the current git branch
-git_branch() {
-  local branch
-  branch=$(git symbolic-ref HEAD 2>/dev/null | sed 's!refs/heads/!!')
-  if [ -n "$branch" ]; then
-    echo "($branch)"
-  else
-    echo "()"
-  fi
-}
+# ─── PATH ───────────────────────────────────────────────────────────────
+typeset -U path PATH            # auto-dedupe entries
+path=("$HOME/.local/bin" $path) # user-local bins (claude, pipx, etc.)
 
-# Function to get the current time
-current_time() {
-  date
-}
+# ─── History ────────────────────────────────────────────────────────────
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY            # share history across sessions
+setopt HIST_IGNORE_ALL_DUPS     # drop older duplicates
+setopt HIST_IGNORE_SPACE        # ignore commands prefixed with a space
+setopt HIST_REDUCE_BLANKS       # trim redundant whitespace
+setopt HIST_VERIFY              # show history expansions before running
 
-# Enable prompt substitution
-setopt prompt_subst
+# ─── Completion ─────────────────────────────────────────────────────────
+autoload -Uz compinit
+compinit
 
-# Define colors
-TIME_C='%F{cyan}'
-USER_C='%F{white}'
-HOST_C='%F{white}'
-DIR_C='%F{yellow}'
-GIT_C='%F{magenta}'
-PROMPT_C='%F{green}'
-# Reset Color
-R_C='%f'
+# ─── Prompt ─────────────────────────────────────────────────────────────
+PROMPT='%F{white}%n@%m%f %F{yellow}%~%f %F{green}%#%f '
 
-# Customize the prompt
-PROMPT='${USER_C}%n${R_C}@${HOST_C}%m${R_C} ${DIR_C}%1~${R_C} ${GIT_C}$(git_branch)${R_C} ${PROMPT_C}%#${R_C} '
-RPROMPT='${TIME_C}$(current_time)${R_C}'
+# ─── WezTerm integration ────────────────────────────────────────────────
+# Reports cwd via OSC 7 (so new tabs inherit it) and sends git_status +
+# foreground prog as OSC 1337 user-vars (rendered by .wezterm.lua). Skipped
+# on non-WezTerm terminals because the OSC 1337 sequence isn't standard.
+if [[ $TERM_PROGRAM == WezTerm ]]; then
+  wez_set_user_var() {
+    local name=$1 value=$2
+    printf '\033]1337;SetUserVar=%s=%s\007' \
+      "$name" "$(print -rn -- "$value" | base64 -w0)"
+  }
 
-# Enable vcs_info for git branch info
-autoload -Uz vcs_info
+  _wez_precmd() {
+    printf '\033]7;file://%s%s\007' "$HOST" "$PWD"
+    wez_set_user_var prog zsh
 
-# Load the prompt
-autoload -U promptinit
-promptinit
+    local info toplevel branch=""
+    if info=$(git rev-parse --show-toplevel --abbrev-ref HEAD 2>/dev/null); then
+      toplevel=${info%$'\n'*}
+      branch=${info##*$'\n'}
+      [[ $branch == HEAD ]] && branch=""    # hide on detached HEAD
+    fi
+    if [[ -n $branch ]]; then
+      wez_set_user_var git_status "${toplevel:t} ($branch)"
+    else
+      wez_set_user_var git_status ""
+    fi
+  }
+
+  # On WSL, wezterm sees the Windows-side helper (wslhost.exe) as the
+  # foreground process; emit the real command name so tab titles are useful.
+  _wez_preexec() {
+    wez_set_user_var prog "${${1%% *}:t}"
+  }
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd _wez_precmd
+  add-zsh-hook preexec _wez_preexec
+fi
