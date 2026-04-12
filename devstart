@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Open claude in a vertical split to the right, then start nvim in this pane.
+# Requires WezTerm (uses `wezterm cli` for pane splitting).
+wezterm cli split-pane --right -- claude --dangerously-skip-permissions
+exec nvim

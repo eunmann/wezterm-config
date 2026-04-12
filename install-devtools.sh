@@ -19,6 +19,9 @@ echo
 "$INSTALL_DIR/claude-code.sh"
 echo
 
+"$INSTALL_DIR/devstart.sh"
+echo
+
 echo "========================================"
 echo "  Development tools installation complete!"
 echo "========================================"
@@ -27,6 +30,7 @@ echo "Installed:"
 echo "  - Go (latest, /usr/local/go)"
 echo "  - Neovim (latest, /opt/nvim)"
 echo "  - Claude Code (native binary, ~/.local/bin)"
+echo "  - devstart (nvim + claude split, ~/.local/bin)"
 echo
 echo "Next steps:"
 echo "   1. Start a new terminal session to ensure PATH is updated"

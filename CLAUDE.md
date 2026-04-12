@@ -27,6 +27,7 @@ All scripts orchestrate their respective modules in the correct order. For selec
 **Configuration Files:**
 - `.wezterm.lua` - WezTerm configuration with Tokyo Night theme, font settings, keybindings, and git status integration
 - `.zshrc` - Zsh configuration with history settings, custom prompt, and WezTerm integration via user-vars
+- `devstart` - Dev session launcher: opens nvim + claude split in WezTerm (installed to `~/.local/bin` by `install/devstart.sh`)
 
 **Installation System:**
 - `install-all.sh` - Master installation script that runs everything in order (3 phases)
@@ -42,6 +43,7 @@ All scripts orchestrate their respective modules in the correct order. For selec
 - `install/go.sh` - Installs latest Go from go.dev to /usr/local/go
 - `install/neovim.sh` - Installs latest Neovim from GitHub releases to /opt/nvim
 - `install/claude-code.sh` - Installs Claude Code native binary via official installer
+- `install/devstart.sh` - Installs devstart script to `~/.local/bin`
 - `install/docker.sh` - Installs Docker using official script, adds user to docker group
 
 ## WezTerm Configuration Architecture
