@@ -56,37 +56,38 @@ table.insert(config.hyperlink_rules, {
   format = "https://github.com/$1/$2/issues/$3",
 })
 
--- CTRL+SPACE: clean against zsh, vim built-ins (<C-A> increment, <C-B>
--- page up), and nvim's Space leader.
-config.leader = { key = "Space", mods = "CTRL", timeout_milliseconds = 1500 }
-
 -- ─── Keybindings ────────────────────────────────────────────────────────
--- Most things use wezterm's CTRL+SHIFT defaults (tabs, jump-to-tab, palette,
--- search, copy mode, quick select). Only additions live here.
+-- Use SUPER (CMD on macOS, WIN on Windows/Linux) for all WezTerm operations
+-- to avoid conflicts with terminal apps (nvim, zsh, etc.) and OS bindings.
+-- Keep wezterm's CTRL+SHIFT defaults for tabs, palette, search, copy mode.
 config.keys = {
-  -- Font size: bind both shifted (+, _) and unshifted (=, -) forms because
-  -- wezterm's matching of the + glyph through SHIFT is unreliable.
-  { key = "+", mods = "CTRL",       action = act.IncreaseFontSize },
-  { key = "=", mods = "CTRL",       action = act.IncreaseFontSize },
-  { key = "_", mods = "CTRL",       action = act.DecreaseFontSize },
-  { key = "-", mods = "CTRL",       action = act.DecreaseFontSize },
-  { key = "0", mods = "CTRL",       action = act.ResetFontSize },
+  -- Font size
+  { key = "+", mods = "SUPER",       action = act.IncreaseFontSize },
+  { key = "=", mods = "SUPER",       action = act.IncreaseFontSize },
+  { key = "-", mods = "SUPER",       action = act.DecreaseFontSize },
+  { key = "0", mods = "SUPER",       action = act.ResetFontSize },
 
-  -- Pane operations (after CTRL+SPACE leader)
-  { key = "\\", mods = "LEADER", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-  { key = "-",  mods = "LEADER", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
-  { key = "h",  mods = "LEADER", action = act.ActivatePaneDirection("Left") },
-  { key = "l",  mods = "LEADER", action = act.ActivatePaneDirection("Right") },
-  { key = "k",  mods = "LEADER", action = act.ActivatePaneDirection("Up") },
-  { key = "j",  mods = "LEADER", action = act.ActivatePaneDirection("Down") },
-  { key = "z",  mods = "LEADER", action = act.TogglePaneZoomState },
-  { key = "x",  mods = "LEADER", action = act.CloseCurrentPane({ confirm = true }) },
-  { key = "r",  mods = "LEADER", action = act.ActivateKeyTable({
+  -- Pane splitting: SUPER+| (vertical line) splits right, SUPER+- splits down
+  { key = "|", mods = "SUPER|SHIFT", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+  { key = "_", mods = "SUPER|SHIFT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
+
+  -- Pane navigation: SUPER+hjkl (vim-style)
+  { key = "h",  mods = "SUPER", action = act.ActivatePaneDirection("Left") },
+  { key = "l",  mods = "SUPER", action = act.ActivatePaneDirection("Right") },
+  { key = "k",  mods = "SUPER", action = act.ActivatePaneDirection("Up") },
+  { key = "j",  mods = "SUPER", action = act.ActivatePaneDirection("Down") },
+
+  -- Pane management
+  { key = "z",  mods = "SUPER", action = act.TogglePaneZoomState },
+  { key = "x",  mods = "SUPER", action = act.CloseCurrentPane({ confirm = true }) },
+
+  -- Pane resizing: SUPER+r enters resize mode, then bare hjkl
+  { key = "r",  mods = "SUPER", action = act.ActivateKeyTable({
       name = "resize_pane", one_shot = false, timeout_milliseconds = 2000,
     }) },
 }
 
--- LEADER+r enters this; bare h/j/k/l resize, Escape/Enter exit.
+-- SUPER+r enters this; bare h/j/k/l resize, Escape/Enter exit.
 config.key_tables = {
   resize_pane = {
     { key = "h",      action = act.AdjustPaneSize({ "Left",  3 }) },
