@@ -23,7 +23,7 @@ if ! flatpak remotes | awk '{print $1}' | grep -qx flathub; then
 fi
 
 # Install WezTerm from Flathub
-if ! flatpak list | awk -F'\t' '{print $1}' | grep -qx "$WEZTERM_APP_ID"; then
+if ! flatpak list --columns=application 2>/dev/null | grep -qx "$WEZTERM_APP_ID"; then
   flatpak install -y flathub "$WEZTERM_APP_ID"
   echo "    WezTerm installed successfully"
 else

@@ -22,7 +22,7 @@ echo "    Latest version: $LATEST"
 
 # Check if already installed and up to date
 if command -v nvim >/dev/null 2>&1; then
-  CURRENT="v$(nvim --version | head -n1 | awk '{print $2}')"
+  CURRENT="$(nvim --version | head -n1 | awk '{print $2}')"
   if [ "$CURRENT" = "$LATEST" ]; then
     echo "    Neovim is already up to date ($CURRENT)"
     exit 0

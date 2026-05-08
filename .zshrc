@@ -1,6 +1,10 @@
 # ─── PATH ───────────────────────────────────────────────────────────────
 typeset -U path PATH            # auto-dedupe entries
-path=("$HOME/.local/bin" $path) # user-local bins (claude, pipx, etc.)
+path=(
+  "$HOME/.local/bin"
+  /usr/local/go/bin
+  $path
+)
 
 # ─── History ────────────────────────────────────────────────────────────
 HISTFILE="$HOME/.zsh_history"

@@ -51,6 +51,7 @@ Docker only:
 ./install/go.sh                # Install latest Go from go.dev
 ./install/neovim.sh            # Install latest Neovim from GitHub
 ./install/claude-code.sh       # Install Claude Code native binary
+./install/devstart.sh          # Install devstart (nvim + claude split launcher)
 ```
 
 **Container platform:**
@@ -63,13 +64,20 @@ Docker only:
 **WezTerm:**
 - Tokyo Night color scheme
 - SauceCodePro Nerd Font
-- Alt+{ / Alt+} tab navigation
+- SUPER+hjkl pane navigation, SUPER+| / SUPER+_ splitting
 - Git repository/branch display in right status bar
 
 **Zsh:**
 - Shared history across sessions
 - Git branch integration with WezTerm
 - Minimal prompt (git info shown in terminal status bar)
+
+**Dev workflow:**
+- `devstart` — opens nvim + claude in a WezTerm split
+
+## Verification
+
+Run `./check.sh` to verify the environment is set up correctly and check for available updates. It's read-only and never installs anything.
 
 ## Configuration Files
 
