@@ -11,3 +11,6 @@ echo "==> Installing dotfiles to $USER_HOME..."
 
 install_dotfile "$REPO_ROOT/.zshrc" "$USER_HOME/.zshrc"
 install_dotfile "$REPO_ROOT/.wezterm.lua" "$USER_HOME/.wezterm.lua"
+
+# Install devstart to ~/.local/bin
+"$SCRIPT_DIR/devstart.sh"

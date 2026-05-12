@@ -43,13 +43,12 @@ sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf "$TMP_TAR"
 rm -f "$TMP_TAR"
 
-# Ensure /usr/local/go/bin is on PATH via ~/.profile
-PROFILE="$USER_HOME/.profile"
-PATH_LINE='export PATH="/usr/local/go/bin:$PATH"'
-if ! grep -Fq '/usr/local/go/bin' "$PROFILE" 2>/dev/null; then
-  echo "    Adding Go to PATH in ~/.profile"
-  echo "$PATH_LINE" >> "$PROFILE"
-  chown "$USER_NAME":"$USER_NAME" "$PROFILE"
+# Verify ~/.zshrc includes Go in PATH (the repo's .zshrc has it in the path=() array;
+# install/dotfiles.sh copies it to $USER_HOME/.zshrc)
+ZSHRC="$USER_HOME/.zshrc"
+if ! grep -Fq '/usr/local/go/bin' "$ZSHRC" 2>/dev/null; then
+  echo "    WARNING: ~/.zshrc does not include /usr/local/go/bin in PATH"
+  echo "    Run install/dotfiles.sh to install the updated .zshrc"
 fi
 
 # Verify
