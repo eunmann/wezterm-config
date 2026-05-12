@@ -17,7 +17,7 @@ This runs terminal setup, development tools, and Docker installation in the corr
 
 **Or install components separately:**
 - `./install.sh` - Terminal setup (WezTerm + Zsh)
-- `./install-devtools.sh` - Development tools (Go + Neovim + Claude Code)
+- `./install-devtools.sh` - Development tools (Go + Neovim + Claude Code + NVM/Node)
 - `./install/docker.sh` - Docker container platform
 
 All scripts orchestrate their respective modules in the correct order. For selective installation, individual modules can be run from `install/` directory.
@@ -43,6 +43,7 @@ All scripts orchestrate their respective modules in the correct order. For selec
 - `install/go.sh` - Installs latest Go from go.dev to /usr/local/go
 - `install/neovim.sh` - Installs latest Neovim from GitHub releases to /opt/nvim
 - `install/claude-code.sh` - Installs Claude Code native binary via official installer
+- `install/nvm.sh` - Installs NVM (Node Version Manager) and latest LTS Node
 - `install/devstart.sh` - Installs devstart script to `~/.local/bin`
 - `install/docker.sh` - Installs Docker using official script, adds user to docker group
 
@@ -62,7 +63,8 @@ The `.wezterm.lua` file uses WezTerm's Lua API:
 ## Zsh Configuration Architecture
 
 The `.zshrc` provides:
-- **PATH**: prepends `~/.local/bin` (where the Claude Code binary lives) and dedupes via `typeset -U path PATH`
+- **PATH**: prepends `~/.local/bin` (where the Claude Code binary lives) and `/usr/local/go/bin` then dedupes via `typeset -U path PATH`
+- **NVM**: sources `$NVM_DIR/nvm.sh` and bash_completion (silently skipped if NVM isn't installed)
 - **History management**: shared history across sessions, duplicate removal (`SHARE_HISTORY`, `HIST_IGNORE_ALL_DUPS`, etc.), 10k entries
 - **Completion**: `compinit` for tab completion
 - **Minimal prompt**: `user@host ~/path %` — git/host/time render in WezTerm's right status bar instead of in the prompt
@@ -114,6 +116,14 @@ Tools are installed as direct binaries from official sources (no package manager
 **Claude Code** (`install/claude-code.sh`):
 - Native binary installed via official installer to `~/.local/bin/claude`
 - Self-updating: run `claude update`
+
+**NVM + Node** (`install/nvm.sh`):
+- NVM installed from GitHub via official installer to `~/.nvm`
+- Latest LTS Node installed and set as default via `nvm alias default lts/*`
+- Idempotent: skips if installed NVM version matches latest and Node is present
+- Shell integration sourced in `.zshrc` (NVM is a shell function, not a binary)
+- Handles sudo: runs installer as the real user via `sudo -u` when invoked under sudo
+- Update NVM by re-running the script; update Node with `nvm install --lts`
 
 ## Docker
 

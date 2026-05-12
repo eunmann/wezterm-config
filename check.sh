@@ -20,7 +20,7 @@ info() { printf "    %s\n" "$1"; }
 section() { printf "\n${BOLD}── %s${NC}\n" "$1"; }
 
 # ── Variables filled by checks, used across sections ─────────────────────
-GO_CURRENT="" NVIM_CURRENT="" WEZTERM_VER=""
+GO_CURRENT="" NVIM_CURRENT="" WEZTERM_VER="" NVM_CURRENT="" NODE_CURRENT=""
 
 # =========================================================================
 section "APT Packages"
@@ -150,6 +150,31 @@ else
 fi
 
 # =========================================================================
+section "NVM / Node"
+# =========================================================================
+NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  if [ -d "$NVM_DIR/.git" ]; then
+    NVM_CURRENT="$(git -C "$NVM_DIR" describe --tags --abbrev=0 2>/dev/null || echo "unknown")"
+  else
+    NVM_CURRENT="unknown"
+  fi
+  pass "NVM $NVM_CURRENT"
+else
+  fail "NVM not installed"
+fi
+
+if command -v node &>/dev/null; then
+  NODE_CURRENT="$(node --version 2>/dev/null || echo "unknown")"
+  pass "Node $NODE_CURRENT"
+  pass "npm $(npm --version 2>/dev/null || echo 'unknown')"
+elif [ -d "$NVM_DIR/versions/node" ] && [ "$(ls -A "$NVM_DIR/versions/node" 2>/dev/null)" ]; then
+  warn "Node installed via NVM but not on PATH (start a new shell or source ~/.zshrc)"
+else
+  fail "Node not installed"
+fi
+
+# =========================================================================
 section "Claude Code"
 # =========================================================================
 if command -v claude &>/dev/null; then
@@ -226,6 +251,19 @@ else
     fi
   elif [[ -n "$FONT_LATEST" ]]; then
     info "Latest Nerd Fonts: $FONT_LATEST (no local version marker)"
+  fi
+
+  # NVM
+  NVM_LATEST="$(curl -fsSL --connect-timeout 5 'https://api.github.com/repos/nvm-sh/nvm/releases/latest' 2>/dev/null \
+    | jq -r '.tag_name' 2>/dev/null || true)"
+  if [[ -n "$NVM_LATEST" && -n "$NVM_CURRENT" && "$NVM_CURRENT" != "unknown" ]]; then
+    if [[ "$NVM_CURRENT" == "$NVM_LATEST" ]]; then
+      pass "NVM up to date ($NVM_LATEST)"
+    else
+      warn "NVM update: $NVM_CURRENT → $NVM_LATEST"
+    fi
+  elif [[ -n "$NVM_LATEST" ]]; then
+    info "Latest NVM: $NVM_LATEST (not installed locally)"
   fi
 
   # WezTerm Flatpak

@@ -19,6 +19,9 @@ echo
 "$INSTALL_DIR/claude-code.sh"
 echo
 
+"$INSTALL_DIR/nvm.sh"
+echo
+
 "$INSTALL_DIR/devstart.sh"
 echo
 
@@ -30,9 +33,10 @@ echo "Installed:"
 echo "  - Go (latest, /usr/local/go)"
 echo "  - Neovim (latest, /opt/nvim)"
 echo "  - Claude Code (native binary, ~/.local/bin)"
+echo "  - NVM + Node LTS (~/.nvm)"
 echo "  - devstart (nvim + claude split, ~/.local/bin)"
 echo
 echo "Next steps:"
 echo "   1. Start a new terminal session to ensure PATH is updated"
-echo "   2. Verify with: go version && nvim --version && claude --version"
+echo "   2. Verify with: go version && nvim --version && claude --version && node --version"
 echo
