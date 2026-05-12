@@ -32,14 +32,14 @@ echo "========================================"
 echo "  Development tools installation complete!"
 echo "========================================"
 echo
-echo "Installed:"
-echo "  - Go (latest, /usr/local/go)"
-echo "  - Neovim (latest, /opt/nvim) + kickstart.nvim config (~/.config/nvim)"
-echo "  - Claude Code (native binary, ~/.local/bin)"
-echo "  - NVM + Node LTS (~/.nvm)"
-echo "  - devstart (nvim + claude split, ~/.local/bin)"
+echo "Installed versions:"
+echo
+echo "  Go          $(go version 2>/dev/null | awk '{print $3}' || echo 'not found')"
+echo "  Neovim      $(nvim --version 2>/dev/null | head -n1 | awk '{print $2}' || echo 'not found')"
+echo "  Claude Code $(claude --version 2>/dev/null || echo 'not found')"
+echo "  NVM         $(bash -c 'export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && echo v$(nvm --version)' 2>/dev/null || echo 'not found')"
+echo "  Node        $(bash -c 'export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && node --version' 2>/dev/null || echo 'not found')"
 echo
 echo "Next steps:"
-echo "   1. Start a new terminal session to ensure PATH is updated"
-echo "   2. Verify with: go version && nvim --version && claude --version && node --version"
+echo "   Start a new terminal session to ensure PATH is updated"
 echo
