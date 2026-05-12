@@ -10,11 +10,12 @@ Personal WezTerm and Zsh configuration with modular installation system.
 ```
 
 This installs everything:
-- WezTerm (via Flatpak) + SauceCodePro Nerd Font
+- WezTerm (apt) + SauceCodePro Nerd Font
 - Zsh as default shell + custom configurations
 - Go (latest from go.dev)
-- Neovim (latest from GitHub)
+- Neovim (latest from GitHub) + kickstart.nvim config
 - Claude Code (native binary)
+- NVM + Node LTS
 - Docker
 
 **Or install components separately:**
@@ -24,7 +25,7 @@ Terminal setup only:
 ./install.sh
 ```
 
-Development tools only (Go + Neovim + Claude Code):
+Development tools only (Go + Neovim + kickstart.nvim + Claude Code + NVM/Node):
 ```bash
 ./install-devtools.sh
 ```
@@ -39,7 +40,7 @@ Docker only:
 **Terminal setup modules:**
 ```bash
 ./install/packages.sh          # Install apt packages
-./install/flatpak-wezterm.sh   # Install WezTerm
+./install/wezterm.sh           # Install WezTerm
 ./install/fonts.sh             # Install Nerd Fonts
 ./install/zsh-setup.sh         # Set zsh as default shell
 ./install/dotfiles.sh          # Copy config files to ~
@@ -50,7 +51,9 @@ Docker only:
 ```bash
 ./install/go.sh                # Install latest Go from go.dev
 ./install/neovim.sh            # Install latest Neovim from GitHub
+./install/nvim-config.sh       # Clone kickstart.nvim to ~/.config/nvim
 ./install/claude-code.sh       # Install Claude Code native binary
+./install/nvm.sh               # Install NVM + latest LTS Node
 ./install/devstart.sh          # Install devstart (nvim + claude split launcher)
 ```
 

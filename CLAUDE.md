@@ -17,7 +17,7 @@ This runs terminal setup, development tools, and Docker installation in the corr
 
 **Or install components separately:**
 - `./install.sh` - Terminal setup (WezTerm + Zsh)
-- `./install-devtools.sh` - Development tools (Go + Neovim + Claude Code + NVM/Node)
+- `./install-devtools.sh` - Development tools (Go + Neovim + kickstart.nvim + Claude Code + NVM/Node)
 - `./install/docker.sh` - Docker container platform
 
 All scripts orchestrate their respective modules in the correct order. For selective installation, individual modules can be run from `install/` directory.
@@ -34,14 +34,15 @@ All scripts orchestrate their respective modules in the correct order. For selec
 - `install.sh` - Terminal setup (WezTerm + Zsh)
 - `install-devtools.sh` - Development tools (Go + Neovim + Claude Code)
 - `install/helpers.sh` - Common helper functions (`need_sudo`, `get_user_info`, `install_dotfile`)
-- `install/packages.sh` - Installs required apt packages (zsh, git, curl, unzip, xclip, jq)
-- `install/flatpak-wezterm.sh` - Installs Flatpak, adds Flathub, and installs WezTerm
+- `install/packages.sh` - Installs required apt packages (zsh, git, curl, unzip, xclip, jq, make, gcc, ripgrep, fd-find)
+- `install/wezterm.sh` - Adds WezTerm apt repository and installs WezTerm via deb package
 - `install/fonts.sh` - Downloads and installs SauceCodePro Nerd Font system-wide (latest version via GitHub API)
 - `install/zsh-setup.sh` - Sets zsh as the default shell in /etc/shells
 - `install/dotfiles.sh` - Copies .zshrc and .wezterm.lua to user home directory with backups
 - `install/zshrc.sh` - Installs/updates only .zshrc (focused module, used by `dotfiles.sh`)
 - `install/go.sh` - Installs latest Go from go.dev to /usr/local/go
 - `install/neovim.sh` - Installs latest Neovim from GitHub releases to /opt/nvim
+- `install/nvim-config.sh` - Clones eunmann/kickstart.nvim to ~/.config/nvim
 - `install/claude-code.sh` - Installs Claude Code native binary via official installer
 - `install/nvm.sh` - Installs NVM (Node Version Manager) and latest LTS Node
 - `install/devstart.sh` - Installs devstart script to `~/.local/bin`
@@ -112,6 +113,16 @@ Tools are installed as direct binaries from official sources (no package manager
 - Symlinked to `/usr/local/bin/nvim`
 - Idempotent: skips if installed version matches latest
 - Update by re-running the script
+
+**Neovim Config** (`install/nvim-config.sh`):
+- Clones `eunmann/kickstart.nvim` (fork of nvim-lua/kickstart.nvim) to `~/.config/nvim`
+- Idempotent: if already cloned from the same repo, runs `git pull --ff-only` to update
+- Backs up any existing non-matching config with a timestamped suffix
+- Handles sudo: clones as the real user via `sudo -u`
+- First `nvim` launch auto-installs plugins via `vim.pack` (requires Neovim 0.12+ and internet)
+- System dependencies (in `packages.sh`): make, gcc (treesitter compilation), ripgrep, fd-find (Telescope)
+- Custom plugins in `lua/custom/plugins/`: copilot, diffview, render-markdown, spectre
+- Update config: re-run the script or `cd ~/.config/nvim && git pull`
 
 **Claude Code** (`install/claude-code.sh`):
 - Native binary installed via official installer to `~/.local/bin/claude`

@@ -25,7 +25,7 @@ GO_CURRENT="" NVIM_CURRENT="" WEZTERM_VER="" NVM_CURRENT="" NODE_CURRENT=""
 # =========================================================================
 section "APT Packages"
 # =========================================================================
-for pkg in zsh git curl unzip xclip jq; do
+for pkg in zsh git curl unzip xclip jq make gcc ripgrep fd-find; do
   if dpkg -s "$pkg" &>/dev/null; then
     pass "$pkg"
   else
@@ -53,17 +53,13 @@ else
 fi
 
 # =========================================================================
-section "WezTerm (Flatpak)"
+section "WezTerm"
 # =========================================================================
-if command -v flatpak &>/dev/null; then
-  if flatpak list --columns=application 2>/dev/null | grep -qx "org.wezfurlong.wezterm"; then
-    WEZTERM_VER="$(flatpak list --columns=application,version 2>/dev/null | awk -F'\t' '/org.wezfurlong.wezterm/{print $2}')"
-    pass "WezTerm installed ($WEZTERM_VER)"
-  else
-    fail "WezTerm not installed via Flatpak"
-  fi
+if command -v wezterm &>/dev/null; then
+  WEZTERM_VER="$(wezterm --version 2>/dev/null | awk '{print $2}' || echo "unknown")"
+  pass "WezTerm installed ($WEZTERM_VER)"
 else
-  fail "flatpak not installed"
+  fail "WezTerm not installed"
 fi
 
 # =========================================================================
@@ -147,6 +143,29 @@ if command -v nvim &>/dev/null; then
   fi
 else
   fail "Neovim not installed"
+fi
+
+# =========================================================================
+section "Neovim Config"
+# =========================================================================
+NVIM_CONFIG="$HOME/.config/nvim"
+if [[ -d "$NVIM_CONFIG/.git" ]]; then
+  REMOTE="$(git -C "$NVIM_CONFIG" remote get-url origin 2>/dev/null || echo "")"
+  if [[ "$REMOTE" == *"eunmann/kickstart.nvim"* ]]; then
+    pass "kickstart.nvim cloned to $NVIM_CONFIG"
+    # Check for uncommitted local changes
+    if git -C "$NVIM_CONFIG" diff --quiet 2>/dev/null && git -C "$NVIM_CONFIG" diff --cached --quiet 2>/dev/null; then
+      pass "Config working tree clean"
+    else
+      warn "Config has local modifications"
+    fi
+  else
+    warn "$NVIM_CONFIG is a git repo but not eunmann/kickstart.nvim (remote: $REMOTE)"
+  fi
+elif [[ -d "$NVIM_CONFIG" ]]; then
+  warn "$NVIM_CONFIG exists but is not a git repo"
+else
+  fail "Neovim config not installed ($NVIM_CONFIG)"
 fi
 
 # =========================================================================
@@ -266,13 +285,13 @@ else
     info "Latest NVM: $NVM_LATEST (not installed locally)"
   fi
 
-  # WezTerm Flatpak
-  if command -v flatpak &>/dev/null; then
-    WEZTERM_UPDATE="$(flatpak remote-ls --updates 2>/dev/null | grep -i wezterm || true)"
-    if [[ -n "$WEZTERM_UPDATE" ]]; then
-      warn "WezTerm flatpak update available"
-    elif [[ -n "$WEZTERM_VER" ]]; then
-      pass "WezTerm flatpak up to date ($WEZTERM_VER)"
+  # WezTerm (apt)
+  if command -v wezterm &>/dev/null; then
+    WEZTERM_UPGRADABLE="$(apt list --upgradable 2>/dev/null | grep wezterm || true)"
+    if [[ -n "$WEZTERM_UPGRADABLE" ]]; then
+      warn "WezTerm apt update available"
+    else
+      pass "WezTerm up to date ($WEZTERM_VER)"
     fi
   fi
 fi
@@ -296,11 +315,6 @@ fi
 NVIM_SCRIPT="$SCRIPT_DIR/install/neovim.sh"
 if grep -q 'CURRENT="v\$(' "$NVIM_SCRIPT" 2>/dev/null; then
   warn "install/neovim.sh has double-v prefix bug (vv0.x.x) — version check never matches"
-fi
-
-FLATPAK_SCRIPT="$SCRIPT_DIR/install/flatpak-wezterm.sh"
-if grep -q "flatpak list.*'{print \$1}'" "$FLATPAK_SCRIPT" 2>/dev/null; then
-  warn "install/flatpak-wezterm.sh checks wrong flatpak column — idempotency broken"
 fi
 
 DEVSTART_SCRIPT="$SCRIPT_DIR/install/devstart.sh"

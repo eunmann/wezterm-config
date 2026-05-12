@@ -16,6 +16,9 @@ echo
 "$INSTALL_DIR/neovim.sh"
 echo
 
+"$INSTALL_DIR/nvim-config.sh"
+echo
+
 "$INSTALL_DIR/claude-code.sh"
 echo
 
@@ -31,7 +34,7 @@ echo "========================================"
 echo
 echo "Installed:"
 echo "  - Go (latest, /usr/local/go)"
-echo "  - Neovim (latest, /opt/nvim)"
+echo "  - Neovim (latest, /opt/nvim) + kickstart.nvim config (~/.config/nvim)"
 echo "  - Claude Code (native binary, ~/.local/bin)"
 echo "  - NVM + Node LTS (~/.nvm)"
 echo "  - devstart (nvim + claude split, ~/.local/bin)"

@@ -78,14 +78,14 @@ echo
 echo "Installed:"
 echo
 echo "Terminal Setup:"
-echo "  - WezTerm (Flatpak)"
+echo "  - WezTerm (apt)"
 echo "  - SauceCodePro Nerd Font"
 echo "  - Zsh as default shell"
 echo "  - Custom terminal configurations"
 echo
 echo "Development Tools:"
 echo "  - Go (latest from go.dev)"
-echo "  - Neovim (latest from GitHub)"
+echo "  - Neovim (latest from GitHub) + kickstart.nvim config"
 echo "  - Claude Code (native binary)"
 echo "  - NVM + Node LTS"
 echo

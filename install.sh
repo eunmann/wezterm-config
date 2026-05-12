@@ -13,7 +13,7 @@ echo
 "$INSTALL_DIR/packages.sh"
 echo
 
-"$INSTALL_DIR/flatpak-wezterm.sh"
+"$INSTALL_DIR/wezterm.sh"
 echo
 
 "$INSTALL_DIR/fonts.sh"
@@ -30,7 +30,7 @@ echo "✅ Installation complete!"
 echo "========================================"
 echo
 echo "Installed:"
-echo "  • WezTerm (Flatpak)"
+echo "  • WezTerm (apt)"
 echo "  • SauceCodePro Nerd Font (system-wide)"
 echo "  • zsh as default shell"
 echo "  • ~/.zshrc with git status integration"
