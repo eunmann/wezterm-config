@@ -36,6 +36,12 @@ config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = false
 config.status_update_interval = 1000 -- ms
 
+-- ─── Renderer ───────────────────────────────────────────────────────────
+-- Override the default WebGpu backend: it leaks VRAM/GTT (shared system RAM)
+-- during long sessions with heavy TUIs on NVIDIA + Linux, slowing the whole
+-- machine. See wezterm#4826. Requires a full restart to take effect.
+config.front_end = "OpenGL"
+
 -- ─── Launcher (platform-specific) ───────────────────────────────────────
 -- On Windows, register a WSL domain so new tabs/panes inherit the real WSL
 -- cwd (via OSC 7) instead of always starting at ~. On macOS/Linux, leave
