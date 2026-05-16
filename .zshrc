@@ -2,6 +2,7 @@
 typeset -U path PATH            # auto-dedupe entries
 path=(
   "$HOME/.local/bin"
+  "$HOME/go/bin"
   /usr/local/go/bin
   $path
 )
